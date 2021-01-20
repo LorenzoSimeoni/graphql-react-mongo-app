@@ -1,16 +1,42 @@
-import { graphql } from 'graphql';
-import express from 'express';
-import bodyParser from 'body-parser';
-import { buildSchema } from 'graphql';
-const { graphqlHTTP } = require('express-graphql');
+import "reflect-metadata";
+import { ApolloServer } from "apollo-server";
+import { buildSchema } from "type-graphql";
+import { EventResolver } from "./resolvers/event.resolver";
 
-const app = express();
+// const app = express();
+// const port = 3000;
+// app.use(bodyParser.json());
 
-app.use(bodyParser.json());
+// const schema = buildSchemaSync({
+//   resolvers: [__dirname + "/**/*.resolver.{ts,js}"],
+// });
 
-app.get('/graphql', graphqlHTTP({
-  schema: null
-  rootValue: {},
-}));
+// const root = {
+//   hello: () => {
+//     return 'Hello world!';
+//   },
+// };
 
-app.listen(3011);
+// app.use('/graphql', graphqlHTTP({
+//   schema: schema,
+//   rootValue: root,
+//   graphiql: true,
+// }));
+
+// app.listen(port, err => {
+//   if (err) {
+//     return console.error(err);
+//   }
+//   return console.log(`server is listening on ${port}`);
+// });
+
+async function main() {
+  const schema = await buildSchema({
+    resolvers: [EventResolver],
+  });
+  const server = new ApolloServer({ schema })
+  await server.listen(4000)
+  console.log("Server has started!")
+}
+
+main();

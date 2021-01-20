@@ -1,13 +1,20 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "lib": ["es6"],
-    "types": ["reflect-metadata", "node"],
+    "lib": [
+      "es6",
+      "esnext.asynciterable"
+    ],
+    "types": [
+      "reflect-metadata",
+      "node"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "pretty": true,
     "sourceMap": true,
     "target": "es5",
+    // "strict": true, /* Enable all strict type-checking options. */
     "outDir": "./dist",
     "baseUrl": "./src",
     "emitDecoratorMetadata": true,
@@ -16,6 +23,10 @@
     "downlevelIteration": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
