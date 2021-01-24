@@ -23,60 +23,41 @@ export class EventResolver {
   }
 
   @Query(() => [Event])
-  events(): Promise<Event[]> {
-    return this.eventService.getAllEvents();
+  async events(): Promise<Event[]> {
+    return await this.eventService.getAllEvents();
   }
 
   @Query(() => Event)
-  event(@Arg('id') id: string) {
-    return this.eventService.getEventById(new Types.ObjectId(id));
+  async event(@Arg('id') id: string): Promise<Event> {
+    return await this.eventService.getEventById(new Types.ObjectId(id));
   }
 
-  // @Mutation(() => Event)
-  // createEvent(@Arg('newEvent') newEvent: InputEvent) {
-  //   const existingEvent = events.find(event => event._id.toHexString() == newEvent._id);
-  //   if (!existingEvent) {
-  //     const event = {
-  //       _id: newEvent._id,
-  //       title: newEvent.title,
-  //       description: newEvent.description,
-  //       price: newEvent.price,
-  //       date: new Date()
-  //     }
-  //     events.push(event);
-  //     return event;
-  //   } else {
-  //     throw new Error('Event already exist with ID : ' + newEvent._id);
-  //   }
-  // }
+  @Mutation(() => Event)
+  async createEvent(@Arg('inputEvent') inputEvent: InputEvent): Promise<Event> {
+    try {
+      const event = this.eventService.createEvent(inputEvent);
+      return await event;
+    } catch (e) {
+      throw new Error('Cannot create event : ' + e);
+    }
+  }
 
-  // @Mutation(() => Event)
-  // updateEvent(@Arg('id') id: string, @Arg('update') updatedEvent: UpdateInputEvent) {
-  //   let index = events.findIndex(event => event._id.toHexString() === id);
-  //   if (index !== -1) {
+  @Mutation(() => Event)
+  async updateEvent(@Arg('id') id: string, @Arg('update') updatedEvent: UpdateInputEvent): Promise<Event> {
+    try {
+      const event = await this.eventService.updateGeneric<UpdateInputEvent>(new Types.ObjectId(id), updatedEvent);
+      return event;
+    } catch (e) {
+      throw new Error('Can\'t update Event with that ID : ' + id);
+    }
+  }
 
-  //     const event = await new EventModel
-  //     events[index] = {
-  //       _id: events[index]._id,
-  //       title: updatedEvent.title ?? events[index].title,
-  //       description: updatedEvent.description ?? events[index].description,
-  //       price: updatedEvent.price ?? events[index].price,
-  //       date: events[index].date
-  //     }
-  //     return events[index];
-  //   } else {
-  //     throw new Error('No event find with that ID : ' + id);
-  //   }
-  // }
-
-  // @Mutation(() => Boolean)
-  // deleteEvent(@Arg('id') id: string) {
-  //   const index = events.findIndex(event => event._id.toHexString() === id);
-  //   if (index != -1) {
-  //     events = events.splice(index, 1);
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+  @Mutation(() => Boolean)
+  async deleteEvent(@Arg('id') id: string): Promise<boolean> {
+    try {
+      return await this.eventService.deleteEvent(new Types.ObjectId(id));
+    } catch {
+      throw new Error('Can\t delete Event with that ID: ' + id);
+    }
+  }
 }
