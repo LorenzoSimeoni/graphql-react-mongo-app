@@ -30,7 +30,8 @@
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
     "graphql": "^15.4.0",
-    "mongoose": "^5.11.12",
+    "inversify": "^5.0.5",
+    "mongoose": "^5.11.13",
     "reflect-metadata": "^0.1.13",
     "tsc-node": "0.0.3",
     "type-graphql": "^1.1.1"

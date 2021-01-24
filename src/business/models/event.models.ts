@@ -1,9 +1,10 @@
+import { Document, Types } from "mongoose";
 import { Field, Float, ID, ObjectType } from "type-graphql";
 
 @ObjectType()
-export class Event {
+export class Event extends Document {
   @Field(() => ID)
-  _id: string;
+  _id: Types.ObjectId;
 
   @Field()
   title: string;

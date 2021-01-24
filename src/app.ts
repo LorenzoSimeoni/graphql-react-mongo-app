@@ -1,7 +1,15 @@
-import "reflect-metadata";
-import { ApolloServer } from "apollo-server";
-import { buildSchema } from "type-graphql";
-import { EventResolver } from "./resolvers/event.resolver";
+import 'reflect-metadata';
+import { ApolloServer } from 'apollo-server';
+import { buildSchema } from 'type-graphql';
+import { EventResolver } from './resolvers/event.resolver';
+import { mongoose } from '@typegoose/typegoose';
+import { Container } from 'inversify';
+import { businessModule } from './business/business.module';
+
+
+export const container = new Container({ autoBindInjectable: true, defaultScope: 'Singleton' });
+container.load(businessModule);
+
 
 // const app = express();
 // const port = 3000;
@@ -34,8 +42,18 @@ async function main() {
   const schema = await buildSchema({
     resolvers: [EventResolver],
   });
+
+  await mongoose.connect(`mongodb+srv://${process.env.MONGO_USER
+    }:${process.env.MONGO_PASSWORD
+    }@cluster0.7gjqv.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }).then().catch(err => {
+    console.log(err);
+  });
+
   const server = new ApolloServer({ schema })
-  await server.listen(4000)
+  await server.listen(4003)
   console.log("Server has started!")
 }
 
