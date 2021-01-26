@@ -1,4 +1,4 @@
-import { Field, Float, InputType } from "type-graphql";
+import { Field, Float, InputType } from 'type-graphql';
 
 @InputType()
 export class UpdateInputEvent {
@@ -10,4 +10,7 @@ export class UpdateInputEvent {
 
   @Field(() => Float, { nullable: true })
   price: number;
+
+  @Field({ nullable: true })
+  date: Date;
 }

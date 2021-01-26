@@ -1,6 +1,6 @@
 import { Event } from '../business/models/event.models';
 import { Resolver, Query, Arg, Mutation } from 'type-graphql';
-import { InputEvent } from '../business/models/createEvent.model';
+import { InputEvent } from '../business/models/event-input.model';
 import { UpdateInputEvent } from '../business/models/update-event.model';
 import { EventModel } from '../business/models/event.schema';
 import { EventService } from '../business/services/events.service';
@@ -15,11 +15,6 @@ export class EventResolver {
     private eventService: EventService
   ) {
     this.eventService = new EventService();
-  }
-
-  @Query(() => String)
-  hello() {
-    return 'hello world';
   }
 
   @Query(() => [Event])

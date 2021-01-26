@@ -1,8 +1,8 @@
 import { EventModel } from '../models/event.schema';
 import { Event } from '../models/event.models';
-import { Query, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { injectable } from 'inversify';
-import { InputEvent } from 'business/models/createEvent.model';
+import { InputEvent } from 'business/models/event-input.model';
 
 @injectable()
 export class EventService {
@@ -26,14 +26,14 @@ export class EventService {
     try {
       // eventToCreate.created_by = user;
       // eventToCreate.created_date = createdDate; TODO
-      const event = {
+      const event = new EventModel({
         title: inputEvent.title,
         description: inputEvent.description,
         price: inputEvent.price,
-        date: new Date()
-      };
+        date: new Date(inputEvent.date)
+      });
 
-      return (await new EventModel(event).save()).toObject() as Event;
+      return await event.save();
     } catch (err) {
       throw err;
     }

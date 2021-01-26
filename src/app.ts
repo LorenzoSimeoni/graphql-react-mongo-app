@@ -5,6 +5,7 @@ import { EventResolver } from './resolvers/event.resolver';
 import { mongoose } from '@typegoose/typegoose';
 import { Container } from 'inversify';
 import { businessModule } from './business/business.module';
+import { UserResolver } from './resolvers/user.resolver';
 
 
 export const container = new Container({ autoBindInjectable: true, defaultScope: 'Singleton' });
@@ -40,7 +41,7 @@ container.load(businessModule);
 
 async function main() {
   const schema = await buildSchema({
-    resolvers: [EventResolver],
+    resolvers: [EventResolver, UserResolver],
   });
 
   await mongoose.connect(`mongodb+srv://${process.env.MONGO_USER
@@ -52,9 +53,9 @@ async function main() {
     console.log(err);
   });
 
-  const server = new ApolloServer({ schema })
-  await server.listen(4003)
-  console.log("Server has started!")
+  const server = new ApolloServer({ schema });
+  await server.listen(4002);
+  console.log('Server has started!');
 }
 
 main();

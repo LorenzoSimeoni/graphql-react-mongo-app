@@ -1,5 +1,5 @@
-import { Document, Types } from "mongoose";
-import { Field, Float, ID, ObjectType } from "type-graphql";
+import { Document, Types } from 'mongoose';
+import { Field, Float, ID, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export class Event extends Document {
