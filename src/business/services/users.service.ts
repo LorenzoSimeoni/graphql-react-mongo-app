@@ -4,6 +4,8 @@ import { injectable } from 'inversify';
 import { User } from '../models/user.model';
 import { UserModel } from '../models/user.schema';
 import { UserInput } from '../models/user-input.model';
+import { Event } from '../models/event.models';
+import lodash from 'lodash';
 
 @injectable()
 export class UserService {
@@ -13,7 +15,7 @@ export class UserService {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await UserModel.find().lean();
+    return await UserModel.find().populate('created_events').lean();
   }
 
   async getUserById(id: Types.ObjectId): Promise<User> {

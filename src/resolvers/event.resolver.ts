@@ -6,20 +6,39 @@ import { EventModel } from '../business/models/event.schema';
 import { EventService } from '../business/services/events.service';
 import { Types } from 'mongoose';
 import { injectable } from 'inversify';
+import { UserService } from '../business/services/users.service';
 
 @injectable()
 @Resolver()
 export class EventResolver {
 
   constructor(
-    private eventService: EventService
+    private eventService: EventService,
+    private userService: UserService
+
   ) {
     this.eventService = new EventService();
+    this.userService = new UserService();
+  }
+
+  user = async (userId: Types.ObjectId) => {
+    console.log('userId', userId);
+    // return userId;
+    return await this.userService.getUserById(userId);
   }
 
   @Query(() => [Event])
   async events(): Promise<Event[]> {
-    return await this.eventService.getAllEvents();
+    const events: Event[] = await this.eventService.getAllEvents();
+    // events = await Promise.all(events.map(async event => { // TODO DEBUG
+    //   return {
+    //     ...event,
+    //     // created_by: await this.user.apply(this, [event.created_by])
+    //     created_by: await this.user.bind(this, [event.created_by])
+    //   };
+    // }));
+    console.log('eveeeeeeeeeeents', events);
+    return events;
   }
 
   @Query(() => Event)
@@ -30,8 +49,15 @@ export class EventResolver {
   @Mutation(() => Event)
   async createEvent(@Arg('inputEvent') inputEvent: InputEvent): Promise<Event> {
     try {
-      const event = this.eventService.createEvent(inputEvent);
-      return await event;
+      const event = await this.eventService.createEvent(inputEvent);
+      const user = await this.userService.getUserById(event.created_by);
+      if (user) {
+        user.created_events.push(event._id);
+        await this.userService.updateGeneric(event.created_by, { created_events: user.created_events });
+      } else {
+        throw new Error('This user ID does not exist: ' + event.created_by);
+      }
+      return event;
     } catch (e) {
       throw new Error('Cannot create event : ' + e);
     }

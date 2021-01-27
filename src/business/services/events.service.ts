@@ -19,18 +19,16 @@ export class EventService {
     return EventModel.findById(id).lean();
   }
 
+  // TODO ADD ROLLBACK
   async createEvent(inputEvent: InputEvent): Promise<Event> {
-    // const user = lodash.get(options, 'user'); TODO
-    // const createdDate = new Date();
-
     try {
-      // eventToCreate.created_by = user;
-      // eventToCreate.created_date = createdDate; TODO
       const event = new EventModel({
         title: inputEvent.title,
         description: inputEvent.description,
         price: inputEvent.price,
-        date: new Date(inputEvent.date)
+        date: inputEvent.date ? new Date(inputEvent.date) : new Date(),
+        created_by: inputEvent.created_by,
+        created_date: new Date()
       });
 
       return await event.save();

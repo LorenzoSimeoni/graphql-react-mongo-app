@@ -11,6 +11,9 @@ export class InputEvent {
   @Field(() => Float)
   price: number;
 
-  @Field()
+  @Field({ nullable: true })
   date: string;
+
+  @Field()
+  created_by: string;
 }

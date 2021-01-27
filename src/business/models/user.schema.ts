@@ -1,13 +1,12 @@
 import { model, Model, Schema, Types } from 'mongoose';
-import { Event } from './event.models';
 import { User } from './user.model';
 
 
 const USER_SCHEMA = new Schema(Object.assign({
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   created_events: [
-    { type: Types.ObjectId, ref: Event }
+    { type: Types.ObjectId, ref: 'events' }
   ]
 }));
 
