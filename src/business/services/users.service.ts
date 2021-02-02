@@ -22,6 +22,10 @@ export class UserService {
     return UserModel.findById(id).lean();
   }
 
+  async getUserByEmail(email: string): Promise<User> {
+    return UserModel.findOne({ email: email }).lean();
+  }
+
   async createUser(userInput: UserInput): Promise<User> {
     try {
       const user = new UserModel({

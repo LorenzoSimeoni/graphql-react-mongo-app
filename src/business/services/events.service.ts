@@ -12,7 +12,7 @@ export class EventService {
   }
 
   async getAllEvents(): Promise<Event[]> {
-    return await EventModel.find().lean();
+    return await EventModel.find().populate('created_by').lean();
   }
 
   async getEventById(id: Types.ObjectId): Promise<Event> {

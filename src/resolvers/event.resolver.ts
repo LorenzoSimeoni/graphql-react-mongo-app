@@ -1,5 +1,5 @@
 import { Event } from '../business/models/event.models';
-import { Resolver, Query, Arg, Mutation } from 'type-graphql';
+import { Resolver, Query, Arg, Mutation, FieldResolver, Root } from 'type-graphql';
 import { InputEvent } from '../business/models/event-input.model';
 import { UpdateInputEvent } from '../business/models/update-event.model';
 import { EventModel } from '../business/models/event.schema';
@@ -7,9 +7,10 @@ import { EventService } from '../business/services/events.service';
 import { Types } from 'mongoose';
 import { injectable } from 'inversify';
 import { UserService } from '../business/services/users.service';
+import { User } from '../business/models/user.model';
 
 @injectable()
-@Resolver()
+@Resolver(() => Event)
 export class EventResolver {
 
   constructor(
@@ -21,23 +22,9 @@ export class EventResolver {
     this.userService = new UserService();
   }
 
-  user = async (userId: Types.ObjectId) => {
-    console.log('userId', userId);
-    // return userId;
-    return await this.userService.getUserById(userId);
-  }
-
   @Query(() => [Event])
   async events(): Promise<Event[]> {
     const events: Event[] = await this.eventService.getAllEvents();
-    // events = await Promise.all(events.map(async event => { // TODO DEBUG
-    //   return {
-    //     ...event,
-    //     // created_by: await this.user.apply(this, [event.created_by])
-    //     created_by: await this.user.bind(this, [event.created_by])
-    //   };
-    // }));
-    console.log('eveeeeeeeeeeents', events);
     return events;
   }
 
@@ -81,4 +68,11 @@ export class EventResolver {
       throw new Error('Can\t delete Event with that ID: ' + id);
     }
   }
+
+  // @FieldResolver(() => User, { name: 'created_by' })
+  // async user(@Root() event: Event): Promise<User> {
+  //   console.log('in field Resolver');
+  //   const user = await this.userService.getUserById(event.created_by);
+  //   return user;
+  // }
 }

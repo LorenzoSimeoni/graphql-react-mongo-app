@@ -1,4 +1,6 @@
-import { Resolver, Query, Arg, Mutation } from 'type-graphql';
+
+
+import { Resolver, Query, Arg, Mutation, FieldResolver, Root } from 'type-graphql';
 import { UserService } from '../business/services/users.service';
 import { Types } from 'mongoose';
 import { injectable } from 'inversify';
@@ -7,14 +9,20 @@ import { UserInputUpdate } from '../business/models/update-input-user.model';
 import { UserInput } from '../business/models/user-input.model';
 import bcrypt from 'bcrypt';
 import lodash from 'lodash';
+import { EventService } from '../business/services/events.service';
+import { Event } from '../business/models/event.models';
+import { AuthData } from '../business/models/auth-data.model';
+import jwt from 'jsonwebtoken';
 
 @injectable()
-@Resolver()
+@Resolver(() => User)
 export class UserResolver {
 
   constructor(
-    private userService: UserService
+    private userService: UserService,
+    private eventService: EventService
   ) {
+    this.eventService = new EventService();
     this.userService = new UserService();
   }
 
@@ -26,6 +34,22 @@ export class UserResolver {
   @Query(() => User)
   async user(@Arg('id') id: string): Promise<User> {
     return await this.userService.getUserById(new Types.ObjectId(id));
+  }
+
+  @Query(() => AuthData)
+  async login(@Arg('email') email: string, @Arg('password') password: string): Promise<AuthData> {
+    const user: User = await this.userService.getUserByEmail(email);
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+    const isPasswordEqual = await bcrypt.compare(password, user.password);
+    if (!isPasswordEqual) {
+      throw new Error('Password is incorrect');
+    }
+    const jwtToken = jwt.sign({ userId: user._id, email: user.email }, 'monhashtrestressecret', {
+      expiresIn: '2h'
+    });
+    return { userId: user._id, token: jwtToken, tokenExpiration: 2 } as AuthData;
   }
 
   @Mutation(() => User)
@@ -57,4 +81,13 @@ export class UserResolver {
       throw new Error('Can\t delete User with that ID: ' + id);
     }
   }
+
+  // @FieldResolver(() => [Event], { name: 'created_events' })
+  // async events(@Root() user: User): Promise<Event[]> {
+  //   console.log('in resolver of user');
+  //   const events = await Promise.all(user.created_events.map(async (event) => {
+  //     return await this.eventService.getEventById(event);
+  //   }));
+  //   return events;
+  // }
 }
